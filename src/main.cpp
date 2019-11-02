@@ -73,28 +73,17 @@ void autonomous() {
 
 
 	left_front.move(-60) && left_back.move(-60) && right_front.move(-60) && right_back.move(-60);
-	pros::delay(850);
+	pros::delay(1450);
 	left_front.move(0) && left_back.move(0) && right_front.move(0) && right_back.move(0);
 	left_lift.move(70) && right_lift.move(70);
 	claw.move(40);
 	pros::delay(250);
 	left_lift.move(20) && right_lift.move(20);
-	left_front.move(60) && left_back.move(60) && right_front.move(60) && right_back.move(60);
-	pros::delay(2200);
-	left_front.move(0) && left_back.move(0) && right_front.move(0) && right_back.move(0);
-	claw.move(-80);
-	pros::delay(400);
-	left_front.move(-60) && left_back.move(-60) && right_front.move(-60) && right_back.move(-60);
-	pros::delay(1500);
-	left_front.move(-60) && left_back.move(-60) && right_front.move(60) && right_back.move(60);
-	pros::delay(2100);
-	left_front.move(0) && left_back.move(0) && right_front.move(0) && right_back.move(0);
-	left_lift.move(40) && right_lift.move(40); // allocate more power to lift
-	pros::delay(600);
-	left_lift.move(20) && right_lift.move(20); // Lift dosn't lift high enough
+	left_front.move(80) && left_back.move(80) && right_front.move(80) && right_back.move(80);
+	pros::delay(1000);
+	left_front.move(0) && left_back.move(0) && right_front.move(0) && right_back.move(1);
 
 
-	
 
 
 }
