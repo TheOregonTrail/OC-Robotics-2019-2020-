@@ -102,26 +102,9 @@ void autonomous() {
  * task, not resume it from where it left off.
  */
 
-
-void opcontrol() {
-    // Hold the lifts in place
-  left_lift.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-  right_lift.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-
-  double icp = claw.get_position(); // Initial Claw Position
-  // test for a stream to the computer through the cable NOT WORKING
-  std::cout << "Claw Initial Position" << icp;
-
-  // main running loop
-  while (true) {
-
-    int lift_analog = master.get_analog(ANALOG_RIGHT_Y);
-    int power = master.get_analog(ANALOG_LEFT_Y);
-    int turn = master.get_analog(ANALOG_LEFT_X);
-
-    // One stick drive
-
-    if(abs(power) > 6 || abs(turn) > 6) {
+void oneStick() {
+	//Motor Control
+	if(abs(power) > 6 || abs(turn) > 6) {
 	    left_front.move(power + turn) && left_back.move(power + turn);
 	    right_front.move(power - turn) && right_back.move(power - turn);
     }else {
@@ -129,7 +112,12 @@ void opcontrol() {
 	    right_front.move(0) && right_back.move(0);
 
     }
-	// opens and closes claw
+
+	// Lift control
+    left_lift.move(lift_analog);
+    right_lift.move(lift_analog);
+
+	//Claw Control
     if(master.get_digital(DIGITAL_R1)){
 		claw.move(65);
 		}
@@ -139,23 +127,77 @@ void opcontrol() {
     else{
 	    claw.move(0);
     }
+}
 
-    // Lift control
-    left_lift.move(lift_analog);
-    right_lift.move(lift_analog);
+void twoStick() {
+	//Motor Control
+	if(master.get_analog(ANALOG_LEFT_Y) > 6 || master.get_analog(ANALOG_RIGHT_Y) > 6) {
+		left_front.move(master.get_analog(ANALOG_LEFT_Y)) && left_back.move(master.get_analog(ANALOG_LEFT_Y));
+		right_front.move(master.get_analog(ANALOG_RIGHT_Y)) && right_back.move(master.get_analog(ANALOG_RIGHT_Y));
+	}else{
+		left_front.move(0) && left_back.move(0);
+	    right_front.move(0) && right_back.move(0);
+	}
+
+	//Claw Control
+	if(master.get_digital(DIGITAL_L2)){
+		claw.move(65);
+	}
+	else if(master.get_digital(DIGITAL_L1)){
+		claw.move(-65);
+	}
+    else{
+	    claw.move(0);
+    }
+
+	//Lift Control
+	if(master.get_digital(DIGITAL_R1)){
+		left_lift.move(50);
+		right_lift.move(50);
+	}
+	else if(master.get_digital(DIGITAL_R2)){
+		left_lift.move(-50);
+		right_lift.move(-50);
+	}
+    else{
+	    left_lift.move(0);
+		right_lift.move(0);
+    }
+}
+
+bool stickMode = false;
+
+void opcontrol() {
+    // Hold the lifts in place
+  left_lift.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+  right_lift.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+
+  double icp = claw.get_position(); // Initial Claw Position
+  // test for a stream to the computer through the cable NOT WORKING
+  std::cout << "Claw Initial Position: " << icp;
+
+  // main running loop
+  while (true) {
+
+    int lift_analog = master.get_analog(ANALOG_RIGHT_Y);
+    int power = master.get_analog(ANALOG_LEFT_Y);
+    int turn = master.get_analog(ANALOG_LEFT_X);
+
+    //Control mode
+	if(stickMode){
+		oneStick();
+	}else{
+		twoStick();
+	}
 
     //Runs Autonomous Sequence
     if (master.get_digital(pros::E_CONTROLLER_DIGITAL_B) &&
-                                master.get_digital(pros::E_CONTROLLER_DIGITAL_A) &&
-                                master.get_digital(pros::E_CONTROLLER_DIGITAL_X) &&
-                                master.get_digital(pros::E_CONTROLLER_DIGITAL_Y))  {
-                        autonomous();
-                        continue;
+		master.get_digital(pros::E_CONTROLLER_DIGITAL_A) &&
+		master.get_digital(pros::E_CONTROLLER_DIGITAL_X) &&
+		master.get_digital(pros::E_CONTROLLER_DIGITAL_Y))  {
+        autonomous();
+        continue;
     }
-
-
-
-
     pros::delay(20);
   }
 
