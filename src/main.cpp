@@ -72,14 +72,17 @@ void autonomous() {
 	// Autonomous 
 
 
+	left_lift.move(35) && right_lift.move(35);
+	pros::delay(800);
+	left_lift.move(15) && right_lift.move(15);
 	left_front.move(-60) && left_back.move(-60) && right_front.move(-60) && right_back.move(-60);
-	pros::delay(1450);
+	pros::delay(1250);
+	left_lift.move(20) && right_lift.move(20);
 	left_front.move(0) && left_back.move(0) && right_front.move(0) && right_back.move(0);
-	left_lift.move(70) && right_lift.move(70);
 	claw.move(40);
 	pros::delay(250);
 	left_lift.move(20) && right_lift.move(20);
-	left_front.move(80) && left_back.move(80) && right_front.move(80) && right_back.move(80);
+	left_front.move(100) && left_back.move(80) && right_front.move(80) && right_back.move(80);
 	pros::delay(1000);
 	left_front.move(0) && left_back.move(0) && right_front.move(0) && right_back.move(1);
 
@@ -102,7 +105,17 @@ void autonomous() {
  * task, not resume it from where it left off.
  */
 
+// int l_motor_speed = 0; For Future Abstraction "Chalie"
+// int r_motor_speed = 0; ^^^
+
 void oneStick() {
+
+    int lift_analog = master.get_analog(ANALOG_RIGHT_Y);
+    int power = master.get_analog(ANALOG_LEFT_Y);
+    int turn = master.get_analog(ANALOG_LEFT_X);
+
+
+
 	//Motor Control
 	if(abs(power) > 6 || abs(turn) > 6) {
 	    left_front.move(power + turn) && left_back.move(power + turn);
@@ -131,7 +144,7 @@ void oneStick() {
 
 void twoStick() {
 	//Motor Control
-	if(master.get_analog(ANALOG_LEFT_Y) > 6 || master.get_analog(ANALOG_RIGHT_Y) > 6) {
+	if(abs(master.get_analog(ANALOG_LEFT_Y)) > 6 || abs(master.get_analog(ANALOG_RIGHT_Y)) > 6) {
 		left_front.move(master.get_analog(ANALOG_LEFT_Y)) && left_back.move(master.get_analog(ANALOG_LEFT_Y));
 		right_front.move(master.get_analog(ANALOG_RIGHT_Y)) && right_back.move(master.get_analog(ANALOG_RIGHT_Y));
 	}else{
@@ -152,20 +165,20 @@ void twoStick() {
 
 	//Lift Control
 	if(master.get_digital(DIGITAL_R1)){
-		left_lift.move(50);
-		right_lift.move(50);
+		left_lift.move(90);
+		right_lift.move(90);
 	}
 	else if(master.get_digital(DIGITAL_R2)){
-		left_lift.move(-50);
-		right_lift.move(-50);
+		left_lift.move(-20);
+		right_lift.move(-20);
 	}
     else{
-	    left_lift.move(0);
-		right_lift.move(0);
+	    left_lift.move(10);
+		right_lift.move(10);
     }
 }
 
-bool stickMode = false;
+bool stickMode = true;
 
 void opcontrol() {
     // Hold the lifts in place
@@ -179,11 +192,7 @@ void opcontrol() {
   // main running loop
   while (true) {
 
-    int lift_analog = master.get_analog(ANALOG_RIGHT_Y);
-    int power = master.get_analog(ANALOG_LEFT_Y);
-    int turn = master.get_analog(ANALOG_LEFT_X);
-
-    //Control mode
+        //Control mode
 	if(stickMode){
 		oneStick();
 	}else{
