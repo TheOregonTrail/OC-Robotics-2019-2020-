@@ -1,16 +1,17 @@
-#include "main.h"
+#include "robotconf.h"
 /**
  * A callback function for LLEMU's center button.
  *
  * When this callback is fired, it will toggle line 2 of the LCD text between
  * "I was pressed!" and nothing.
  */
-void on_center_button() {
+void on_center_button() { 
 	static bool pressed = false;
 	pressed = !pressed;
 	if (pressed) {
 		pros::lcd::set_text(2, "I was pressed!");
 	} else {
+        pros::lcd::clear_line(1);
 		pros::lcd::clear_line(2);
 	}
 }
@@ -23,7 +24,12 @@ void on_center_button() {
  */
 void initialize() {
 	pros::lcd::initialize();
-	pros::lcd::set_text(1, "Hello PROS User!");
+
+    // This string can be maximum 32 chars long
+	pros::lcd::set_text(1, "           Autonomous        ");
+    // pros::lcd::set_text(2, "Blue");
+
+
 
 	pros::lcd::register_btn1_cb(on_center_button);
 }
@@ -44,7 +50,10 @@ void disabled() {}
  * This task will exit when the robot is enabled and autonomous or opcontrol
  * starts.
  */
-void competition_initialize() {}
+void competition_initialize() {
+
+}
+
 
 /**
  * Runs the user autonomous code. This function will be started in its own task
@@ -57,16 +66,7 @@ void competition_initialize() {}
  * from where it left off.
  */
 
-  pros::Motor left_lift (1, pros::E_MOTOR_GEARSET_36, true, pros::E_MOTOR_ENCODER_DEGREES);
-  pros::Motor right_lift (10, pros::E_MOTOR_GEARSET_36, false, pros::E_MOTOR_ENCODER_DEGREES); // This reverses the motor
-  pros::Controller master (CONTROLLER_MASTER);
-  pros::Motor left_front (20, pros::E_MOTOR_GEARSET_18, true, pros::E_MOTOR_ENCODER_DEGREES);
-  pros::Motor left_back (9, pros::E_MOTOR_GEARSET_18, true, pros::E_MOTOR_ENCODER_DEGREES);
-  pros::Motor right_front(11, pros::E_MOTOR_GEARSET_18, false, pros::E_MOTOR_ENCODER_DEGREES);
-  pros::Motor right_back (2, pros::E_MOTOR_GEARSET_18, false, pros::E_MOTOR_ENCODER_DEGREES);
-  pros::Motor claw (16, pros::E_MOTOR_GEARSET_36, true, pros::E_MOTOR_ENCODER_DEGREES);
-
-
+ 
 void autonomous() {
 
 	// Autonomous 
@@ -108,6 +108,8 @@ void autonomous() {
 // int l_motor_speed = 0; For Future Abstraction "Chalie"
 // int r_motor_speed = 0; ^^^
 
+
+// Driver control setting for one stick driving
 void oneStick() {
 
     int lift_analog = master.get_analog(ANALOG_RIGHT_Y);
@@ -116,7 +118,7 @@ void oneStick() {
 
 
 
-	//Motor Control
+    // Allows for drive train control over the one stick
 	if(abs(power) > 6 || abs(turn) > 6) {
 	    left_front.move(power + turn) && left_back.move(power + turn);
 	    right_front.move(power - turn) && right_back.move(power - turn);
@@ -143,7 +145,12 @@ void oneStick() {
 }
 
 void twoStick() {
-	//Motor Control
+
+	/*Drive train control with two sticks
+     * The abs() function is used for deadzones on the controller
+     * get_analog() retrieves the value from the controllers joystick
+     */
+
 	if(abs(master.get_analog(ANALOG_LEFT_Y)) > 6 || abs(master.get_analog(ANALOG_RIGHT_Y)) > 6) {
 		left_front.move(master.get_analog(ANALOG_LEFT_Y)) && left_back.move(master.get_analog(ANALOG_LEFT_Y));
 		right_front.move(master.get_analog(ANALOG_RIGHT_Y)) && right_back.move(master.get_analog(ANALOG_RIGHT_Y));
