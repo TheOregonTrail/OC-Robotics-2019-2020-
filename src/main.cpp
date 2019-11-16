@@ -76,13 +76,13 @@ void autonomous() {
 	pros::delay(800);
 	left_lift.move(15) && right_lift.move(15);
 	left_front.move(-60) && left_back.move(-60) && right_front.move(-60) && right_back.move(-60);
-	pros::delay(1250);
+	pros::delay(1750);
 	left_lift.move(20) && right_lift.move(20);
 	left_front.move(0) && left_back.move(0) && right_front.move(0) && right_back.move(0);
 	claw.move(40);
 	pros::delay(250);
 	left_lift.move(20) && right_lift.move(20);
-	left_front.move(100) && left_back.move(80) && right_front.move(80) && right_back.move(80);
+	left_front.move(80) && left_back.move(80) && right_front.move(80) && right_back.move(80);
 	pros::delay(1000);
 	left_front.move(0) && left_back.move(0) && right_front.move(0) && right_back.move(1);
 
@@ -113,15 +113,15 @@ void autonomous() {
 void oneStick() {
 
     int lift_analog = master.get_analog(ANALOG_RIGHT_Y);
-    int power = master.get_analog(ANALOG_LEFT_Y);
-    int turn = master.get_analog(ANALOG_LEFT_X);
+    int power = master.get_analog(ANALOG_LEFT_Y)/2;
+    int turn = master.get_analog(ANALOG_LEFT_X)/2;
 
 
 
     // Allows for drive train control over the one stick
 	if(abs(power) > 6 || abs(turn) > 6) {
-	    left_front.move(power + turn) && left_back.move(power + turn);
-	    right_front.move(power - turn) && right_back.move(power - turn);
+	    left_front.move(3*(power + turn)) && left_back.move(2*(power + turn));
+	    right_front.move(3*(power - turn)) && right_back.move(2*(power - turn));
     }else {
 	    left_front.move(0) && left_back.move(0);
 	    right_front.move(0) && right_back.move(0);
